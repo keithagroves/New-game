@@ -16,8 +16,8 @@ import static javax.imageio.ImageIO.read;
 //TODO: MAKE THE TRACKS APPEAR IN THEIR CORRECT PLACES
 
 /***********************************************************************************************
- * David Frieder's Thomas Game Copyright 2018 David Frieder 3/4/2018 rev 1.6
- * Thomas can turn left and right with some bugginess
+ * David Frieder's Thomas Game Copyright 2018 David Frieder 3/29/2018 rev 2.0
+ * Upper track/Thomas collision working
  ***********************************************************************************************/
 public class ThomasShootEmUpController extends JComponent implements ActionListener, Runnable, KeyListener
 {
