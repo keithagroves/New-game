@@ -16,8 +16,8 @@ import static javax.imageio.ImageIO.read;
 //TODO: MAKE THE TRACKS APPEAR IN THEIR CORRECT PLACES
 
 /***********************************************************************************************
- * David Frieder's Thomas Game Copyright 2018 David Frieder 3/29/2018 rev 2.0
- * Upper track/Thomas collision working
+ * David Frieder's Thomas Game Copyright 2018 David Frieder 4/9/2018 rev 2.1
+ * Upper track/Thomas collision working with full upper track
  ***********************************************************************************************/
 public class ThomasShootEmUpController extends JComponent implements ActionListener, Runnable, KeyListener
 {
@@ -56,7 +56,7 @@ public class ThomasShootEmUpController extends JComponent implements ActionListe
     private boolean isNotMoving;
     private boolean isJumping;
     private int thomasMaxSpeed = 13;
-    private int initialJumpingVelocity = -31;
+    private int initialJumpingVelocity = -51;
     public int jumpingVelocity = initialJumpingVelocity;
     private int movingVelocity;
     private int gravityAcceleration = 1;
@@ -67,6 +67,7 @@ public class ThomasShootEmUpController extends JComponent implements ActionListe
     private boolean lastWayFacing = true;
     private Area areaA;
     private Area areaB;
+    private boolean isIntersected;
 
     /***********************************************************************************************
      * Main
@@ -99,12 +100,12 @@ public class ThomasShootEmUpController extends JComponent implements ActionListe
         drawRoad();// ........................ Draw Road
         drawUpperTracks();// ................. Draw Upper Tracks
         drawLowerTracks();// ................. Draw Lower Tracks
-        if(testIntersection(thomasShape,upperTrackShape))
+        isIntersected = testIntersection(thomasShape, upperTrackShape);
+        if (isIntersected && thomasTransform.getTranslateY() > upperTrackHeight)
         {
             g2.setColor(Color.BLACK);
             g2.setTransform(thomasTransform);
             g2.fill(thomasShape);
-            System.out.println("Boom");
         }
     }
 
@@ -136,18 +137,16 @@ public class ThomasShootEmUpController extends JComponent implements ActionListe
         g2.setTransform(backgroundTx);
         g2.translate(0, heightOfScreen / 2); // center in screen
         g2.scale(1.5, 1.5);
-        for (int i = 0; i < 2; i++) // fits track images to screen width
-        {
-            g2.drawImage(trackImage, 0, 0, null);
-            g2.translate(trackImage.getWidth(null), 0);
-            upperTrackWidth = trackImage.getWidth(null);
-            upperTrackHeight = trackImage.getHeight(null);
-            upperTrackBox = new Rectangle(-upperTrackWidth, 0, upperTrackWidth, upperTrackHeight);
-            upperTrackShape = upperTrackBox.getBounds();
-            g2.setColor(Color.green);
-            upperTrackTransform = g2.getTransform();
-            g2.draw(upperTrackShape);
-        }
+        upperTrackWidth = trackImage.getWidth(null);
+        upperTrackHeight = trackImage.getHeight(null);
+        upperTrackBox = new Rectangle(0, 0, 2 * upperTrackWidth, upperTrackHeight);
+        upperTrackShape = upperTrackBox.getBounds();
+        g2.drawImage(trackImage, upperTrackWidth, 0, null);
+        g2.drawImage(trackImage, 2 * upperTrackWidth, 0, null);
+        g2.translate(trackImage.getWidth(null), 0);
+        g2.setColor(Color.green);
+        upperTrackTransform = g2.getTransform();
+        g2.draw(upperTrackShape);
     }
 
     /***********************************************************************************************
@@ -302,7 +301,7 @@ public class ThomasShootEmUpController extends JComponent implements ActionListe
         {
             isGoingLeft = false;
             isGoingRight = false;
-            }
+        }
         if (e.getKeyCode() == KeyEvent.VK_UP)
         {
             isJumping = true;
@@ -379,8 +378,8 @@ public class ThomasShootEmUpController extends JComponent implements ActionListe
     /***********************************************************************************************
      * Check for intersections
      ***********************************************************************************************/
-    public boolean testIntersection(Shape shapeA, Shape shapeB) {
-
+    public boolean testIntersection(Shape shapeA, Shape shapeB)
+    {
         areaA = new Area(shapeA);
         areaB = new Area(shapeB);
         areaA.transform(thomasTransform);
